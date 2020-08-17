@@ -44,8 +44,10 @@ contract ProShop is ItemFactory {
         whenNotPaused
         onlyShopOwner(_shopId)
     {
-        uint256 amount = shopBalances[_shopId];
-        require(amount > 0 && address(this).balance >= amount);
+        uint amount = shopBalances[_shopId];
+        address self = address(this);
+        require(amount > 0, "No shop balance to withdraw.");
+        require(amount <= self.balance, "Insufficient contract balance.");
         shopBalances[_shopId] = 0;
         msg.sender.transfer(amount);
         emit ShopBalanceWithdrawn(_shopId, amount);
@@ -59,8 +61,10 @@ contract ProShop is ItemFactory {
         whenNotPaused
         onlyFranchiseOwner
     {
-        uint256 amount = franchiseBalance;
-        require(amount > 0 && address(this).balance >= amount);
+        uint amount = franchiseBalance;
+        require(amount > 0, "No franchise balance to withdraw.");
+        address self = address(this);
+        require(amount <= self.balance, "Insufficient contract balance.");
         franchiseBalance = 0;
         msg.sender.transfer(amount);
         emit FranchiseBalanceWithdrawn(amount);
